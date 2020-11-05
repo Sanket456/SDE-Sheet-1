@@ -1,0 +1,1810 @@
+1) Find the Duplicate Number
+
+There are 'n' distinct numbers in n+1 total pool so by pigeonhole principal we can say that there exits at least one duplicate in the list. 
+
+//Approach 1
+int findDuplicate(vector<int>& nums) 
+    {
+     int max = -1,ans;
+     for(int i=0;i<nums.size();i++)
+     {
+      if(max<nums[i]) max = nums[i];   
+     }
+     
+     int count[max+1];
+     for(int i=0;i<=max;i++)
+     {
+      count[i] = 0;  
+     }
+
+        
+     for(int i=0;i<nums.size();i++)
+     {
+      count[nums[i]]++;   
+     }
+      
+     for(int i=0;i<nums.size();i++)
+     {
+      if(count[nums[i]]>1) 
+        ans = nums[i];  
+     }
+     return ans;
+
+////////////////////////////////////////////
+
+Approach 2 (Sort and compare with previous element)
+
+Approach 3 (Tortoise hare method)
+
+int findDuplicate3(vector<int>& nums)
+{
+	if (nums.size() > 1)
+	{
+		int slow = nums[0];
+		int fast = nums[nums[0]];
+		while (slow != fast)
+		{
+			slow = nums[slow];
+			fast = nums[nums[fast]];
+		}
+
+		fast = 0;
+		while (fast != slow)
+		{
+			fast = nums[fast];
+			slow = nums[slow];
+		}
+		return slow;
+	}
+	return -1;
+}
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+2) Sort 0,1 and 2 + Without using sort function
+
+Approach 1:- Sort and Print Complexity O(nlgn)
+
+Approach 2:- Dutch 3 flag sorting algo
+
+void sortColors(vector<int>& nums) 
+    {
+     int start=0,mid=0,end=nums.size() - 1;
+     
+     while(mid<=end)
+     {
+      switch(nums[mid])
+      {
+          case 0: swap(nums[start++],nums[mid++]);
+                  break;
+              
+          case 1: mid++;
+                  break;
+          
+          case 2: swap(nums[mid],nums[end--]);
+                  break;
+                  
+      }
+     }
+    }
+
+O(n) speed
+O(1) space
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+3) Mearge 2 Sorted arrays 
+ 
+Approach 1 Create a new array pass all elements from both array and then sort it. O(n)
+
+Approach 2 Use Insertion Sort
+
+void merge(int ar1[], int ar2[], int m, int n) 
+{ 
+    // Iterate through all elements of ar2[] starting from 
+    // the last element 
+    for (int i=n-1; i>=0; i--) 
+    { 
+        /* Find the smallest element greater than ar2[i]. Move all 
+           elements one position ahead till the smallest greater 
+           element is not found */
+        int j, last = ar1[m-1]; 
+        for (j=m-2; j >= 0 && ar1[j] > ar2[i]; j--) 
+            ar1[j+1] = ar1[j]; 
+  
+        // If there was a greater element 
+        if (j != m-2 || last > ar2[i]) 
+        { 
+            ar1[j+1] = ar2[i]; 
+            ar2[i] = last; 
+        } 
+    } 
+}
+
+Approach 3 Use Gap Method
+void merge(int* arr1, int* arr2, int n, int m)
+{
+    int i, j, gap = n + m;
+    for (gap = nextGap(gap); gap > 0; gap = nextGap(gap)) {
+        // comparing elements in the first array.
+        for (i = 0; i + gap < n; i++)
+            if (arr1[i] > arr1[i + gap])
+                swap(arr1[i], arr1[i + gap]);
+ 
+        // comparing elements in both arrays.
+        for (j = gap > n ? gap - n : 0; i < n && j < m;
+             i++, j++)
+            if (arr1[i] > arr2[j])
+                swap(arr1[i], arr2[j]);
+ 
+        if (j < m) {
+            // comparing elements in the second array.
+            for (j = 0; j + gap < m; j++)
+                if (arr2[j] > arr2[j + gap])
+                    swap(arr2[j], arr2[j + gap]);
+        }
+    }
+}
+
+int nextGap(int gap)
+{
+    if (gap <= 1)
+        return 0;
+    return (gap / 2) + (gap % 2);
+}
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+4) Find Missing and repeating Number
+Approach 1: Sort the array and find the required solution. O(nlogn) O(1)
+Approach 2: Hashing technique to find the required sol.O(n) O(n)
+Approach 3: O(n)
+
+Prepare two equations 
+example array (4,3,6,2,1,1)
+
+S = 1 + 2 +3 . . . . n = n*(n+1)/2 // Sum of all integers till 'n' 
+when if we subtract S - given array sum we get 
+21 - 17 = 4
+(1+2+3+4+5+6) - (4+3+6+2+1+1)
+S = X(Missing Number) - Y(Repeating Number) --------------------------(1)
+
+Same Procedure for 
+S = 1^2 + 2^2 +3^2 +4^2 .....n^2 = n*(n+1)*(2*n+1)/6
+S^2 - given array ^2
+S^2 = X^2 - Y^2 --------------------------(2)
+
+On Solving two eq we get required solution.
+
+Approach 4: O(n) Refer Video
+
+-> Xor all a[i] this will be stored in x.
+-> x ^ all elements till 'n'.
+-> x ^ y = num.
+-> Separate in 2 buckets.
+-> Separate 1 to n in two buckets.
+-> Xor both baskets to find the number.
+ 
+Code::
+void getTwoElements(int arr[], int n, 
+                    int* x, int* y) 
+{ 
+    /* Will hold xor of all elements  
+    and numbers from 1 to n */
+    int xor1; 
+  
+    /* Will have only single set bit of xor1 */
+    int set_bit_no; 
+  
+    int i; 
+    *x = 0; 
+    *y = 0; 
+  
+    xor1 = arr[0]; 
+  
+    /* Get the xor of all array elements */
+    for (i = 1; i < n; i++) 
+        xor1 = xor1 ^ arr[i]; 
+  
+    /* XOR the previous result with numbers  
+    from 1 to n*/
+    for (i = 1; i <= n; i++) 
+        xor1 = xor1 ^ i; 
+  
+    /* Get the rightmost set bit in set_bit_no */
+    set_bit_no = xor1 & ~(xor1 - 1); 
+  
+    /* Now divide elements into two  
+    sets by comparing a rightmost set 
+    bit of xor1 with the bit at the same  
+    position in each element. Also,  
+    get XORs of two sets. The two 
+    XORs are the output elements.  
+    The following two for loops  
+    serve the purpose */
+    for (i = 0; i < n; i++) { 
+        if (arr[i] & set_bit_no) 
+            /* arr[i] belongs to first set */
+            *x = *x ^ arr[i]; 
+  
+        else
+            /* arr[i] belongs to second set*/
+            *y = *y ^ arr[i]; 
+    } 
+    for (i = 1; i <= n; i++) { 
+        if (i & set_bit_no) 
+            /* i belongs to first set */
+            *x = *x ^ i; 
+  
+        else
+            /* i belongs to second set*/
+            *y = *y ^ i; 
+    } 
+  
+    /* *x and *y hold the desired 
+        output elements */
+} 
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+5) Kadane's Algo
+
+-> Optimal O(n)
+
+int maxSubArray(vector<int>& nums) 
+    {
+     int cs = nums[0];
+     int ms = nums[0];   
+     for(int i=1;i<nums.size();i++)
+     {
+      cs = max(cs+nums[i],nums[i]);
+      ms = max(cs,ms);   
+     }
+     
+    return ms;
+    }
+
+
+//Brute force
+
+for(int i = 0; i < n; i++) {
+    int sum = 0;
+    for (int j = i; j < n; j++) {
+        sum += a[j];
+        if (sum > max)
+            max = sum;
+    }
+}
+
+O(n^2)
+
+
+// Brute force 2
+
+for (int i = 0; i < n; i++)
+    for (int j = i; j < n; j++) {
+        int sum = 0;
+        for (int k = i; k <= j; k++)
+            sum += a[k];
+        if (sum > max)
+            max = sum;
+    }
+
+O(n^3)
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+6) Merge Intervals 
+
+-> Ask weather intervals are sorted or not.
+-> Brute force approach will be to implement this logic in two loops.
+
+if(intervals.size()<=1) return intervals;
+        
+        sort(intervals.begin(), intervals.end());
+        vector<vector<int>> output;
+        output.push_back(intervals[0]);
+        for(int i=1; i<intervals.size(); i++) {
+            if(output.back()[1] >= intervals[i][0]) output.back()[1] = max(output.back()[1] , intervals[i][1]);
+            else output.push_back(intervals[i]); 
+        }
+        return output;
+O(n) Approach 
+
+
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+7) Set Matrix 
+
+Approach 1: Time -> O(n^2) Space -> O(n)
+
+public void setZeroes(int[][] matrix) 
+    {
+    int R = matrix.length;
+    int C = matrix[0].length;
+    Set<Integer> rows = new HashSet<Integer>();
+    Set<Integer> cols = new HashSet<Integer>();
+
+    // Essentially, we mark the rows and columns that are to be made zero
+    for (int i = 0; i < R; i++) {
+      for (int j = 0; j < C; j++) {
+        if (matrix[i][j] == 0) {
+          rows.add(i);
+          cols.add(j);
+        }
+      }
+    }
+
+    // Iterate over the array once again and using the rows and cols sets, update the elements.
+    for (int i = 0; i < R; i++) {
+      for (int j = 0; j < C; j++) {
+        if (rows.contains(i) || cols.contains(j)) {
+          matrix[i][j] = 0;
+        }
+      }
+    }
+  } 
+
+
+Approach 2: Time -> O(n^2) Space -> O(1)
+ void setZeroes(vector<vector<int>>& matrix) 
+    {
+     int R = matrix.size();
+     int C = matrix[0].size();
+     int col0 = 1;   
+     for(int i=0;i<R;i++)
+     {
+      if(matrix[i][0]==0)  col0 = 0;   
+      for(int j=1;j<C;j++)
+      {
+       if(matrix[i][j]==0)
+       {
+        matrix[i][0] = 0;
+        matrix[0][j] = 0;   
+       }
+      }   
+     }
+      
+    // Start from Bottom    
+    for(int i=R-1;i>=0;i--)
+     {
+      for(int j=C-1;j>=1;j--)
+       if(matrix[i][0]==0 || matrix[0][j]==0)
+        matrix[i][j] = 0;   
+        
+        if(col0==0)
+         matrix[i][0] = 0;
+     }
+        
+    }
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+8) Pascal Triangle
+
+Time: O(n^2) , Space: O(1)
+
+vector<vector<int>> generate(int n) 
+    {
+     vector<vector<int>> ans(n);
+     int co = 1;   
+     for(int i=0;i<n;i++)
+     {
+      
+      for(int j=0;j<=i;j++)
+      {
+       if(i==0 || j==0)
+       {
+         co = 1; 
+       }
+       else
+       {
+         co = co * (i-j+1)/j;  
+       }
+       ans[i].push_back(co);   
+      }
+     }
+     return ans;   
+        
+    }
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+9) Next Permutation
+
+Approach 1: next_permutation(arr,n); //This will give us next permutation of array
+
+Approach 2: Store all permutations of array O(n!) and then iterate over the list and check the next prmutation.
+            
+
+Appraoch 3: O(n) and Space O(1)
+
+Step (a): a[i] < a[i+1] // Traversing from the back
+
+index1 = i; //Above Step
+
+Step (b): a[index1] > a[i] // Traversing from the back
+
+index2 = i; //Above Step
+
+Step (c): swap(a[index1],a[index2]);
+
+Step (d): reverse(index1+1,last of index)
+
+
+
+    5                   5             
+  3   4               4   3         4 
+1       2           1       2     1   2
+                                        3
+                                          5
+
+Code:
+
+void nextPermutation(vector<int>& nums) {
+    	int n = nums.size(), k, l;
+    	for (k = n - 2; k >= 0; k--) {
+            if (nums[k] < nums[k + 1]) {
+                break;
+            }
+        }
+    	if (k < 0) {
+    	    reverse(nums.begin(), nums.end());
+    	} else {
+    	    for (l = n - 1; l > k; l--) {
+                if (nums[l] > nums[k]) {
+                    break;
+                }
+            } 
+    	    swap(nums[k], nums[l]);
+    	    reverse(nums.begin() + k + 1, nums.end());
+        }
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+10) Count Inversions
+
+nversion Count for an array indicates – how far (or close) the array is from being sorted. If array is already sorted then inversion count is 0. If array is sorted in reverse order that inversion count is the maximum.
+
+Approach 1: O(n^2)  O(1)
+
+int getInvCount(int arr[], int n) 
+{ 
+    int inv_count = 0; 
+    for (int i = 0; i < n - 1; i++) 
+        for (int j = i + 1; j < n; j++) 
+            if (arr[i] > arr[j]) 
+                inv_count++; 
+  
+    return inv_count; 
+}
+
+Approach 2: O(n) 
+
+int _mergeSort(int arr[], int temp[], int left, int right); 
+int merge(int arr[], int temp[], int left, int mid, int right); 
+  
+/* This function sorts the input array and returns the  
+number of inversions in the array */
+int mergeSort(int arr[], int array_size) 
+{ 
+    int temp[array_size]; 
+    return _mergeSort(arr, temp, 0, array_size - 1); 
+} 
+  
+/* An auxiliary recursive function that sorts the input array and  
+returns the number of inversions in the array. */
+int _mergeSort(int arr[], int temp[], int left, int right) 
+{ 
+    int mid, inv_count = 0; 
+    if (right > left) { 
+        /* Divide the array into two parts and  
+        call _mergeSortAndCountInv()  
+        for each of the parts */
+        mid = (right + left) / 2; 
+  
+        /* Inversion count will be sum of  
+        inversions in left-part, right-part  
+        and number of inversions in merging */
+        inv_count += _mergeSort(arr, temp, left, mid); 
+        inv_count += _mergeSort(arr, temp, mid + 1, right); 
+  
+        /*Merge the two parts*/
+        inv_count += merge(arr, temp, left, mid + 1, right); 
+    } 
+    return inv_count; 
+} 
+  
+/* This funt merges two sorted arrays  
+and returns inversion count in the arrays.*/
+int merge(int arr[], int temp[], int left, 
+          int mid, int right) 
+{ 
+    int i, j, k; 
+    int inv_count = 0; 
+  
+    i = left; /* i is index for left subarray*/
+    j = mid; /* j is index for right subarray*/
+    k = left; /* k is index for resultant merged subarray*/
+    while ((i <= mid - 1) && (j <= right)) { 
+        if (arr[i] <= arr[j]) { 
+            temp[k++] = arr[i++]; 
+        } 
+        else { 
+            temp[k++] = arr[j++]; 
+  
+            /* this is tricky -- see above  
+            explanation/diagram for merge()*/
+            inv_count = inv_count + (mid - i); 
+        } 
+    } 
+  
+    /* Copy the remaining elements of left subarray  
+(if there are any) to temp*/
+    while (i <= mid - 1) 
+        temp[k++] = arr[i++]; 
+  
+    /* Copy the remaining elements of right subarray  
+(if there are any) to temp*/
+    while (j <= right) 
+        temp[k++] = arr[j++]; 
+  
+    /*Copy back the merged elements to original array*/
+    for (i = left; i <= right; i++) 
+        arr[i] = temp[i]; 
+  
+    return inv_count; 
+} 
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+11) Buy Stock
+
+
+Approach 1: Use 2 Loops find min_ele and subtract with all elements to find max profit. O(n^2)
+
+Approach 2: O(n) O(1)
+ int maxProfit(vector<int>& prices) 
+    {
+     int min_ele = INT_MAX;
+     int maxProf = 0;
+     for(int i=0;i<prices.size();i++)
+     {
+      min_ele = min(min_ele,prices[i]);
+      maxProf = max(maxProf,prices[i]-min_ele);   
+     }
+     return maxProf;
+    }  
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+12) Rotate matrix
+
+Approach 1:
+
+Step 1: Take a transpose of matrix.
+Step 2: Take reverse of each row and store in another matrix
+
+O(n^2) & O(n^2)
+
+Approach 2:
+void rotate(vector<vector<int>>& matrix) 
+    {
+     int r = matrix.size();
+     int c = matrix[0].size();
+        
+     for(int i=0;i<r;i++)
+      for(int j=0;j<i;j++)
+       swap(matrix[i][j],matrix[j][i]);
+         
+       for(int j=0;j<c;j++)
+        reverse(matrix[j].begin(),matrix[j].end());  
+         
+    }
+
+O(n^2) & O(1)
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+13) Search in a 2D matrix
+
+Approach 1: Use two loops search all elements and find the required target. O(n^2) O(1)
+
+Approach 2: Star case Search O(n)  
+
+ bool searchMatrix(vector<vector<int>>& matrix, int target) 
+    {
+       if(matrix.size()<=0)
+       {
+        return false;   
+       }
+        
+      int r = matrix.size();
+      int c = matrix[0].size();
+        
+     
+      int i=0,j=c-1;
+      while(i<r && j>=0){
+        if(matrix[i][j]==target)
+        {
+         return true;   
+        }
+        else if(matrix[i][j]>target)
+        {
+         j--;   
+        }
+        else 
+        {
+          i++;  
+        }
+       }
+        
+        return false;
+        
+      }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+14) Pow(X,n)
+
+-> ask if n is positive or negative
+
+Approach 1: Use Built in function pow(x,n);
+
+Approach 2: apply loop from 1 to n.
+int ans = x;
+for(int i=1;i<=n;i++)
+ans = ans * i;
+
+O(n)
+
+if n is negative 1/ans will do the trick.
+
+Approach 3:
+
+double myPow(double x, int n) 
+    {
+     double ans = 1.0;
+     long N = n;
+     if(N<0) N = -1 * N;
+        
+     while(N>0)
+     {
+      if(N%2==1)
+      {
+       ans = ans * x;
+       N--;   
+      }
+      else
+      {
+        x = x * x;
+        N = N/2;  
+      }
+     }
+     if(n<0) ans = 1/ans;
+        
+     return ans;   
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+15) Majority Element ( > N/2)
+
+Approach 1: Use 2 Loops O(n^2)
+
+int majorityElement(vector<int>& arr) 
+    {
+     int count = 0;
+     int ans = 0;   
+     int bar = floor(arr.size()/2); 
+     int n = arr.size();
+     if(n<=1)
+     {
+      return arr[0];   
+     }
+        
+     for(int i=0;i<n;i++)
+     {
+       count = 0;  
+       for(int j=i+1;j<n;j++)
+       {
+         if(arr[i]==arr[j])
+         {
+          count++;   
+         }
+         
+           if(count==bar)
+           {
+            ans = arr[i];
+               break;
+           }
+       }   
+     }
+     return ans;   
+        
+    }
+
+Approach 2: Use a hashmap O(n) O(n)
+Approach 3: Use map Function
+
+int majorityElement(vector<int>& nums) 
+    {
+     map<int,int> mp;
+     //We can also sort the elements at first and then retrive the mid elemet at nums.length()/2;
+        
+    for(int i=0;i<nums.size();i++)
+     {
+      mp[nums[i]]++;
+      if(mp[nums[i]] > nums.size()/2)
+          return nums[i];
+     }
+     
+     return 0;   
+    }
+
+Approach 4: Moores Voting Algorithm
+O(n)
+
+int findCandidate(int a[], int size)
+{
+    int maj_index = 0, count = 1;
+    for (int i = 1; i < size; i++) {
+        if (a[maj_index] == a[i])
+            count++;
+        else
+            count--;
+        if (count == 0) {
+            maj_index = i;
+            count = 1;
+        }
+    }
+    return a[maj_index];
+}
+ 
+/* Function to check if the candidate
+   occurs more than n/2 times */
+bool isMajority(int a[], int size, int cand)
+{
+    int count = 0;
+    for (int i = 0; i < size; i++)
+ 
+        if (a[i] == cand)
+            count++;
+ 
+    if (count > size / 2)
+        return 1;
+ 
+    else
+        return 0;
+}
+ 
+/* Function to print Majority Element */
+void printMajority(int a[], int size)
+{
+    /* Find the candidate for Majority*/
+    int cand = findCandidate(a, size);
+ 
+    /* Print the candidate if it is Majority*/
+    if (isMajority(a, size, cand))
+        cout << " " << cand << " ";
+ 
+    else
+        cout << "No Majority Element";
+}
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+
+15) Majority Element ( > N/3)
+
+Approach 1: Use 2 Loops Like previous question O(N^2)
+
+Approach 2: Use Hashing O(N) O(N)
+
+Approach 3: Using Modified Moores Algorithm
+
+ vector<int> majorityElement(vector<int>& nums) 
+    {
+     int sz = nums.size();
+     int num1 = -1,num2 = -1, count1 = 0,count2 = 0,i;
+     for(i=0; i < sz; i++)
+     {
+      if(nums[i]==num1)
+      {
+       count1++;
+      }
+      else if(nums[i]==num2)
+      {
+       count2++;   
+      }
+      else if(count1==0)
+      {
+       num1 = nums[i];
+       count1 = 1;   
+      }
+       else if(count2==0)
+      {
+       num2 = nums[i];
+       count2 = 1;   
+      }
+      else
+      {
+       count1--;
+       count2--;   
+      }
+     }
+        
+     vector<int> ans;
+     count1 = count2 = 0;
+        
+     for(int i=0;i<sz;i++)
+     {
+      if(nums[i]==num1)
+          count1++;
+      if(nums[i]==num2)
+          count2++;
+     }
+        
+     if(count1 > sz/3)
+        ans.push_back(num1);
+     if(count2 > sz/3 && num1!=num2)
+        ans.push_back(num2);
+        
+    
+        
+      return ans;  
+        
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+16) Unique paths
+
+Approach 1: Recursive Approach O(n^n) O(n^n)
+
+int countPaths(int i,int j,int n,int m)
+    {
+     if(i==(n-1) && j==(m-1)) return 1;
+     else if(i>=n || j>=m) return 0;
+     else return countPaths(i+1,j,n,m) + countPaths(i,j+1,n,m);  
+    }
+    
+    int uniquePaths(int m, int n) 
+    {
+     int i=0,j=0;
+     int ans = countPaths(i,j,n,m);   
+     return ans;   
+    }
+
+Approach 2: Dp Approach O(N^2) will do the trick
+
+ int uniquePaths(int m, int n) {
+        vector<vector<int>> dp(m, vector<int>(n, 1));
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+
+
+Approach 3:
+
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+
+17) Reverse Pairs
+
+Approach 1: O(n^2) O(1)
+
+Use two loops to find required solution.
+
+
+
+Approach 2: Using Merge Sort O(n) O(n)
+
+int merge(vector<int> &nums, int low, int mid, int high)
+    {
+     int cnt = 0;
+     int j = mid+1;
+     
+        for(int i=low;i<=mid;i++)
+        {
+          while(j<=high && nums[i] > 2LL * nums[j])
+          {
+           j++;
+          }
+          cnt += (j-(mid+1));  
+        }
+       
+        vector<int> temp;
+        int left=low, right = mid+1;
+        while(left<=mid && right<=high)
+        {
+         if(nums[left]<=nums[right])
+         {
+          temp.push_back(nums[left++]);    
+         }
+         else
+         {
+          temp.push_back(nums[right++]);   
+         }
+        }
+        
+        while(left<=mid)
+        {
+         temp.push_back(nums[left++]);   
+        }
+        
+        while(right<=high)
+        {
+         temp.push_back(nums[right++]);   
+        }
+        
+        for(int i=low;i<=high;i++)
+        {
+         nums[i] = temp[i-low];   
+        }
+       
+        return cnt;
+        
+    }
+    
+    
+    int mergeSort(vector<int> &nums,int low, int high)
+    {
+     if(low>=high) return 0;
+     
+     int mid = (high+low)/2;
+     int inv = mergeSort(nums,low,mid);
+      inv += mergeSort(nums,mid+1,high);
+      inv += merge(nums,low,mid,high);
+      
+     return inv;   
+    }
+    
+    int reversePairs(vector<int>& nums) 
+    {
+     return mergeSort(nums,0,nums.size()-1);    
+    }
+
+
+
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+18) Starting 5 Puzzels for GFG
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+
+19) Two Sum
+
+Approach 1: Use Two Loops O(N^2) Complexity
+
+Approach 2: Using Hashing Table
+
+vector<int> twoSum(vector<int>& nums, int target)
+    {
+     map<int,int> mp;
+     vector<int> ans;
+     
+     for(int i=0;i<nums.size();i++)
+     {
+      mp[nums[i]] = i;   
+     }
+        
+     for(int i=0;i<nums.size();i++)
+     {
+      int comp = target - nums[0];
+      if(mp[comp])
+      {
+       ans.push_back(i);
+       ans.push_back(mp[comp]);
+       break;   
+      }
+     }
+     
+        return ans;
+        
+        
+    }
+
+O(n) O(n)
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+20) 4 Sum (Same Approach for 3 - Sum)
+
+Approach 1: Sort -> 3 Pointers and Binary Search
+
+      1 1 1 2 2 3 3 4 4 4 
+      i j k -------------BS Here for Missing Number
+
+Store all Quadruplets
+Find uniques using map or hashmap
+
+O(N^3 log N) Complexity  O(N^2) Space Complexity
+
+
+Approach 2: Sort -> 2 Pointers and Left & Right Single Pass 
+
+      1 1 1 2 2 3 3 4 4 4 
+      i j   |            |
+            left         right
+
+Skip Duplicates
+
+vector<vector<int> > fourSum(vector<int> &num, int target)
+    {
+        vector<vector<int> > res;
+        if (num.size() < 4)
+            return res;
+        std::sort(num.begin(),num.end());
+        int i, j;
+        while (i < num.size() - 3)
+        {
+            j = i+1;
+            while (j < num.size() - 2)
+            {
+                int target_2 = target - num[i] - num[j];
+                int front = j + 1;
+                int back = num.size() - 1;
+                while(front < back) {
+                    int two_sum = num[front] + num[back];
+                    if (two_sum < target_2) front++;
+                    else if (two_sum > target_2) back--;
+                    else {
+                        vector<int> quadruplet(4, 0);
+                        quadruplet[0] = num[i];
+                        quadruplet[1] = num[j];
+                        quadruplet[2] = num[front];
+                        quadruplet[3] = num[back];
+                        res.push_back(quadruplet);
+                        // Processing the duplicates of number 3
+                        while (front < back && num[front] == quadruplet[2]) ++front;
+                        // Processing the duplicates of number 4 
+                        while (front < back && num[back] == quadruplet[3]) --back;
+                    } } // Processing the duplicates of number 2 
+                while(j < num.size() - 2 && num[j + 1] == num[j++]);
+            } // Processing the duplicates of number 1 
+            while (i < num.size() - 3 && num[i + 1] == num[i++]);
+        }
+        return res;
+    } 
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+21)Longest Consecutive Integer
+
+Approach 1: Sort and then traverse the elements O(N) O(1)
+
+Approach 2: O(n)
+ 
+int longestConsecutive(vector<int>& nums) 
+    {
+     set<int> hashSet;
+      for(int num:nums){
+          hashSet.insert(num);
+      }  
+        
+      int ans = 0;
+      for(int num:nums){
+          if(!hashSet.count(num-1)){
+              int currentNum = num;
+              int currentStreak = 1;
+              
+              while(hashSet.count(currentNum+1))
+              {
+               currentNum += 1;
+               currentStreak += 1;   
+              }
+              ans = max(ans,currentStreak);
+          }
+      }
+       return ans; 
+    }
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+22) Largest Subarray Sum Zero
+
+Approach 1: Generate all subarrays and find their sum. Find the subarray with sum zero. Find Longest length that is the answer O(n^3) Complexity.
+
+Approach 2: O(N*logN) O(N)
+
+Step 1: Consider that overall sum of the array is 'S'
+
+        1, -1, 3, 2, -2, -8, 1, 7, 10, 23
+        <-              S              ->
+        <-    S    -> <-        0      ->   // A Sub part of the arrays has sum 'S' then rest of the array will be 0
+
+this idealogy will be used to solve this question.
+
+
+int maxLen(int A[], int n)
+{
+ map<int,int> mpp;
+ int maxi = 0;
+ int sum = 0;
+ for(int i=0;i<n;i++)
+ {
+  sum+=A[i];     
+  if(sum==0)
+  {
+   maxi = i+1;      
+  }
+  else
+  {
+   if(mpp.find(sum)!=mpp.end())
+   {
+    maxi = max(maxi, i-mpp[sum]);   
+   }
+   else
+   {
+    mpp[sum] = i;   
+   }
+  }
+ }
+ return maxi;
+}
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+23) Count number of subarrays with given XOR
+
+Approach 1: You can gennerate all sub arrays and find the answer O(N^3)
+
+Approach 2: Use two Loops O(N^2)
+
+long long subarrayXor(int arr[], int n, int m)
+{
+    long long ans = 0; // Initialize ans
+ 
+    // Pick starting point i of subarrays
+    for (int i = 0; i < n; i++) {
+        int xorSum = 0; // Store XOR of current subarray
+ 
+        // Pick ending point j of subarray for each i
+        for (int j = i; j < n; j++) {
+            // calculate xorSum
+            xorSum = xorSum ^ arr[j];
+ 
+            // If xorSum is equal to given value,
+            // increase ans by 1.
+            if (xorSum == m)
+                ans++;
+        }
+    }
+    return ans;
+}
+
+Approach 3: Striver Video + Prefix Xor
+
+O(n*logn)
+
+int solve(vector<int> &A,int B)
+{
+ map<int,int> freq;
+ int count = 0;
+ int xorr = 0;
+ for(auto it: A){
+  xorr = xorr ^ it;
+  
+  if(xorr==B){
+  count++;
+  }
+  
+  if(freq.find(xorr ^ B) !=freq.end())
+  {
+   count += freq[xorr ^ B];
+  }
+
+  freq[xorr] += 1;
+ }
+ 
+return count;
+}
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+24) Longest Subarray Without Repeaating Characters
+
+
+Approach 1: Generate all subarrays O(N^3)
+
+bool areDistinct(string str, int i, int j) 
+{ 
+  
+    // Note : Default values in visited are false 
+    vector<bool> visited(26); 
+  
+    for (int k = i; k <= j; k++) { 
+        if (visited[str[k] - 'a'] == true) 
+            return false; 
+        visited[str[k] - 'a'] = true; 
+    } 
+    return true; 
+} 
+  
+// Returns length of the longest substring 
+// with all distinct characters. 
+int longestUniqueSubsttr(string str) 
+{ 
+    int n = str.size(); 
+    int res = 0; // result 
+    for (int i = 0; i < n; i++) 
+        for (int j = i; j < n; j++) 
+            if (areDistinct(str, i, j)) 
+                res = max(res, j - i + 1); 
+    return res; 
+}
+
+Approach 2: O(N^2)
+
+int longestUniqueSubsttr(string str) 
+{ 
+    int n = str.size(); 
+    int res = 0; // result 
+  
+    for (int i = 0; i < n; i++) { 
+          
+        // Note : Default values in visited are false 
+        vector<bool> visited(256);    
+  
+        for (int j = i; j < n; j++) { 
+  
+            // If current character is visited 
+            // Break the loop 
+            if (visited[str[j]] == true) 
+                break; 
+  
+            // Else update the result if 
+            // this window is larger, and mark 
+            // current character as visited. 
+            else { 
+                res = max(res, j - i + 1); 
+                visited[str[j]] = true; 
+            } 
+        } 
+  
+        // Remove the first character of previous 
+        // window 
+        visited[str[i]] = false; 
+    } 
+    return res; 
+}
+
+Approach 3: O(N) Sliding Window 
+
+int lengthOfLongestSubstring(string s) 
+    {
+     vector<int> mpp(256,-1);
+     int left = 0;
+     int right = 0;
+     int n = s.size();
+     int len = 0;
+     while(right<n){
+         if(mpp[s[right]]!=-1) left = max(mpp[s[right]]+1,left);
+         
+         mpp[s[right]] = right;
+         
+         len = max(len,right-left+1);
+         
+         right++;
+     }
+       return len; 
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+25) Reverse a Linked List
+
+Approach 1: Iterative Solution
+
+ListNode* reverseList(ListNode* head) 
+    {
+     ListNode *p = NULL;
+     ListNode *c = head;
+     ListNode *n;
+     while(c!=NULL)
+     {
+      n = c->next;
+      c->next = p;
+      p = c;
+      c = n;   
+     }
+     head = p; 
+        
+     return head;   
+    }
+
+
+Approach 2: Recursive 
+
+ListNode* reverseList(ListNode* head) 
+    {
+     if(head==NULL || head->next==NULL)
+         return head;
+     
+     ListNode *smallhead = reverseList(head->next);    
+     ListNode *C = head;
+     C->next->next = C;
+     C->next = NULL;
+     return smallhead;   
+    }
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+26) Middel of the Linked List
+
+Approach 1: Traverse to L/2 Middle of the linked list. O(N)
+
+Approach 2: Tortoise Hare method will give desired Solution. O(N)
+
+ ListNode* middleNode(ListNode* head) 
+    {
+     if(head==NULL || head->next==NULL)
+         return head;
+     
+     ListNode *slow = head;
+     ListNode *fast = head;
+     while(fast!=NULL && fast->next!=NULL)
+     {
+      slow = slow->next; 
+      fast = fast->next->next;   
+        
+     }
+     return slow;   
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+27) Merge two Sorted Linked List
+
+Approach 1: Use Extra Space
+
+ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+     if(l1==NULL)
+         return l2;
+     if(l2==NULL)
+         return l1;
+     ListNode *l3; 
+     
+     if(l1->val < l2->val)
+     {
+      l3 = l1;
+      l3->next = mergeTwoLists(l1->next,l2);   
+     }
+     else
+     {
+      l3 = l2;
+      l3->next = mergeTwoLists(l1,l2->next);   
+     }
+     
+     return l3;   
+    }
+
+
+Approach 2: O(N) and O(1) 
+
+ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        if(l1==NULL) return l2;
+        if(l2==NULL) return l1;
+        if(l1->val > l2->val) swap(l1,l2);
+        ListNode *res = l1;
+        while(l1!=NULL && l2!=NULL)
+        {
+         ListNode *temp = NULL;
+         while(l1!=NULL && l1->val <= l2->val){
+            temp = l1;
+            l1 = l1->next; 
+         }
+          temp->next = l2;
+          swap(l1,l2);  
+        }
+        return res;
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+28) Remove Nth Node from the end
+
+
+Approach 1: O(N) 
+
+public ListNode removeNthFromEnd(ListNode head, int n) {
+    ListNode dummy = new ListNode(0);
+    dummy.next = head;
+    int length  = 0;
+    ListNode first = head;
+    while (first != null) {
+        length++;
+        first = first.next;
+    }
+    length -= n;
+    first = dummy;
+    while (length > 0) {
+        length--;
+        first = first.next;
+    }
+    first.next = first.next.next;
+    return dummy.next;
+}
+
+Approach 2: O(N) Single Pass
+
+ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode *start = new ListNode();
+        start->next = head;
+        ListNode *slow = start;
+        ListNode *fast = start;
+       
+        
+        for(int i=1;i<=n;++i)
+            fast = fast->next;
+        
+        
+        while(fast->next!=NULL)
+        {
+         fast = fast->next;
+         slow = slow->next;   
+        }
+        slow->next = slow->next->next;
+        return start->next;
+    }
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+29) Delete The Node in Linked List (Head Not Given O(1))
+
+void deleteNode(ListNode* head) 
+    {
+     head->val = head->next->val;   
+     head->next = head->next->next; 
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+30) Add two Integers in Linked List
+
+O(max(n1,n2)) //Length of Matrix
+
+ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode *dummy = new ListNode();
+        ListNode *temp = dummy;
+        int carry = 0;
+        while(l1!=NULL || l2!=NULL || carry){
+            int sum = 0;
+            if(l1!=NULL){
+                sum += l1->val;
+                l1 = l1->next;  
+            }
+            if(l2!=NULL){
+                sum += l2->val;
+                l2 = l2->next;  
+            }
+            sum += carry;
+            carry = sum/10;
+            ListNode *node = new ListNode(sum%10);
+            temp->next = node;
+            temp = temp->next;
+        }
+        return dummy->next;
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+31) InterSection of Two Linked Lists
+
+Approach 1: Use two Loops and the use if condition to find the mergence of two loops. O(N*M) O(1)
+
+Approach 2: Use Hashing to find all the nodes and hash them into one single hash table O(N+M) O(N)
+
+Approach 3 & 4: Find length, longer - shorter and then traverse. O(N)
+
+ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        ListNode *a = headA;
+     ListNode *b = headB;
+        
+     while(a!=NULL || b!=NULL)
+     {
+      if(a!=NULL){
+          a = a->next;
+      }
+      else
+      {
+       headB = headB->next;   
+      }
+      if(b!=NULL)
+      {
+       b = b->next;   
+      }
+      else{
+           headA = headA->next;  
+      }
+     }  
+      while(headA!=headB){
+          headA = headA->next;
+          headB = headB->next;
+      }
+      return headA;
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+32) Check if Linkedlist is Palindrome or not
+
+Approach 1: Pass all elements of linkedlist to vector and then check if it is palindrome or not. O(N) O(N)
+
+Approach 2: find middle of linked list reverse the other part and check if the reversed part is same is starting part
+
+ListNode *reverseList(ListNode *head)
+    {
+     ListNode *p = NULL;
+     ListNode *n = NULL;
+     while(head!=NULL){
+         n = head->next;
+         head->next = p;
+         p = head;
+         head = n;
+     }
+      return p;  
+    }
+    
+    bool isPalindrome(ListNode* head) {  
+        if(head==NULL || head->next==NULL)
+            return true;
+        
+        ListNode *slow = head;
+        ListNode *fast = head;
+        
+        while(fast->next!=NULL && fast->next->next !=NULL){
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        slow->next = reverseList(slow->next);
+        slow = slow->next;
+        
+        while(slow!=NULL)
+        {
+         if(head->val != slow->val){
+             return false;
+         }
+          head = head->next;
+          slow = slow->next;
+        }
+        return true;
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+33) Reverse Linked List in Groups
+
+Apprach 1: Use Recursive Method to call the list again and again 
+
+int length(ListNode * node){
+    int count=0;
+    while(node){
+        count++;
+        node=node->next;
+    }
+    return count;
+}
+ListNode* reverseKGroup(ListNode* head, int k) {
+   
+   if(length(head) < k)
+    return head;
+    
+   ListNode * cur=head;
+   ListNode * prev=NULL, *next=NULL;
+    
+   for(int i=0; i < k; i++){
+       next=cur->next;
+       cur->next=prev;
+       prev=cur;
+       cur=next;
+   }
+    
+   head->next=reverseKGroup(cur, k);
+   return prev;
+ }
+
+Approach 2: Use Iterative Method
+
+ListNode *reverseKGroup(ListNode *head, int k) {
+        if(head==NULL||k==1) return head;
+        int num=0;
+        ListNode *preheader = new ListNode(-1);
+        preheader->next = head;
+        ListNode *cur = preheader, *nex, *pre = preheader;
+        while(cur = cur->next) 
+            num++;
+        while(num>=k) {
+            cur = pre->next;
+            nex = cur->next;
+            for(int i=1;i<k;++i) {
+                cur->next=nex->next;
+                nex->next=pre->next;
+                pre->next=nex;
+                nex=cur->next;
+            }
+            pre = cur;
+            num-=k;
+        }
+        return preheader->next;
+    }
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+34) Cycle in Linked List
+
+Approach 1: Pass all nodes(address) in hashmap, the one with two location will tell there is a loop. Time:O(N), Sapce: O(N)
+
+Approach 2: Tortoise Hare Method
+
+bool hasCycle(ListNode *head) {
+     if(head==NULL || head->next==NULL)
+         return false;
+        
+     ListNode *slow = head;
+     ListNode *fast = head->next;
+        
+     while(slow!=fast)
+     {
+      if(fast==NULL || fast->next==NULL)
+          return false;
+  
+       slow = slow->next;
+       fast = fast->next->next;  
+     }
+        
+       return true; 
+    }
+
+O(N) O(1)
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+35) Flatten a Linked List (Use LeetCode for Doubly LinkedList Code)
+
+Approach 1:
+
+Node* merge( Node* a, Node* b ) 
+{ 
+    // If first list is empty, the second list is result 
+    if (a == NULL) 
+        return b; 
+  
+    // If second list is empty, the second list is result 
+    if (b == NULL) 
+        return a; 
+  
+    // Compare the data members of head nodes of both lists 
+    // and put the smaller one in result 
+    Node* result; 
+    if (a->data < b->data) 
+    { 
+        result = a; 
+        result->down = merge( a->down, b ); 
+    } 
+    else
+    { 
+        result = b; 
+        result->down = merge( a, b->down ); 
+    } 
+  
+    result->right = NULL; 
+    return result; 
+} 
+  
+// The main function that flattens a given linked list 
+Node* flatten (Node* root) 
+{ 
+    // Base cases 
+    if (root == NULL || root->right == NULL) 
+        return root; 
+  
+    // Merge this list with the list on right side 
+    return merge( root, flatten(root->right) ); 
+} 
+
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+36) Rotate a Linked List
+
+Approach 1: GFG O(N) Only One Traversal
+
+void rotate(Node** head_ref, int k) 
+{ 
+    if (k == 0) 
+        return; 
+  
+    // Let us understand the below 
+    // code for example k = 4 and 
+    // list = 10->20->30->40->50->60. 
+    Node* current = *head_ref; 
+  
+    // current will either point to 
+    // kth or NULL after this loop. 
+    // current will point to node 
+    // 40 in the above example 
+    int count = 1; 
+    while (count < k && current != NULL) { 
+        current = current->next; 
+        count++; 
+    } 
+  
+    // If current is NULL, k is greater than 
+    // or equal to count of nodes in linked list. 
+    // Don't change the list in this case 
+    if (current == NULL) 
+        return; 
+  
+    // current points to kth node. 
+    // Store it in a variable. kthNode 
+    // points to node 40 in the above example 
+    Node* kthNode = current; 
+  
+    // current will point to 
+    // last node after this loop 
+    // current will point to 
+    // node 60 in the above example 
+    while (current->next != NULL) 
+        current = current->next; 
+  
+    // Change next of last node to previous head 
+    // Next of 60 is now changed to node 10 
+    current->next = *head_ref; 
+  
+    // Change head to (k+1)th node 
+    // head is now changed to node 50 
+    *head_ref = kthNode->next; 
+  
+    // change next of kth node to NULL 
+    // next of 40 is now NULL 
+    kthNode->next = NULL; 
+} 
+
+
+Approach 2: Make a linked list circular then solve.
+
+ListNode* rotateRight(ListNode* head, int k) {
+      if (!head || !head->next || k == 0) return head;
+    ListNode *cur = head;
+    int len = 1;
+    while (cur->next && ++len) cur = cur->next;
+    cur->next = head;
+    k = len - k % len;
+    while (k--) cur = cur->next;
+    head = cur->next;
+    cur->next = nullptr;
+   return head; 
+    }
+
+**********************************************************************************************************************************************************************************************************************************************************************************************************************************************
+
+ 
